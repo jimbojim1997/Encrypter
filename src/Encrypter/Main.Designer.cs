@@ -32,7 +32,7 @@
             this.tbPassword1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tbPassword2 = new System.Windows.Forms.TextBox();
-            this.btnSelectFileDir = new System.Windows.Forms.Button();
+            this.btnSelectFile = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tbFileDirPath = new System.Windows.Forms.TextBox();
             this.cbDeleteOriginalFileDir = new System.Windows.Forms.CheckBox();
@@ -40,6 +40,7 @@
             this.btnEncrypt = new System.Windows.Forms.Button();
             this.btnDecrypt = new System.Windows.Forms.Button();
             this.pbPasswordMatch = new System.Windows.Forms.PictureBox();
+            this.btnSelectDir = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbPasswordMatch)).BeginInit();
             this.SuspendLayout();
             // 
@@ -59,7 +60,7 @@
             this.tbPassword1.PasswordChar = '*';
             this.tbPassword1.Size = new System.Drawing.Size(172, 20);
             this.tbPassword1.TabIndex = 1;
-            this.tbPassword1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbPassword1_KeyPress);
+            this.tbPassword1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tbPassword1_KeyUp);
             // 
             // label1
             // 
@@ -77,17 +78,17 @@
             this.tbPassword2.PasswordChar = '*';
             this.tbPassword2.Size = new System.Drawing.Size(172, 20);
             this.tbPassword2.TabIndex = 3;
-            this.tbPassword2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbPassword2_KeyPress);
+            this.tbPassword2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tbPassword2_KeyUp);
             // 
-            // btnSelectFileDir
+            // btnSelectFile
             // 
-            this.btnSelectFileDir.Location = new System.Drawing.Point(230, 79);
-            this.btnSelectFileDir.Name = "btnSelectFileDir";
-            this.btnSelectFileDir.Size = new System.Drawing.Size(47, 23);
-            this.btnSelectFileDir.TabIndex = 4;
-            this.btnSelectFileDir.Text = "Open";
-            this.btnSelectFileDir.UseVisualStyleBackColor = true;
-            this.btnSelectFileDir.Click += new System.EventHandler(this.btnSelectFileDir_Click);
+            this.btnSelectFile.Location = new System.Drawing.Point(205, 78);
+            this.btnSelectFile.Name = "btnSelectFile";
+            this.btnSelectFile.Size = new System.Drawing.Size(33, 23);
+            this.btnSelectFile.TabIndex = 4;
+            this.btnSelectFile.Text = "File";
+            this.btnSelectFile.UseVisualStyleBackColor = true;
+            this.btnSelectFile.Click += new System.EventHandler(this.btnSelectFile_Click);
             // 
             // label2
             // 
@@ -103,20 +104,19 @@
             this.tbFileDirPath.Location = new System.Drawing.Point(12, 81);
             this.tbFileDirPath.Name = "tbFileDirPath";
             this.tbFileDirPath.ReadOnly = true;
-            this.tbFileDirPath.Size = new System.Drawing.Size(212, 20);
+            this.tbFileDirPath.Size = new System.Drawing.Size(187, 20);
             this.tbFileDirPath.TabIndex = 6;
             // 
             // cbDeleteOriginalFileDir
             // 
             this.cbDeleteOriginalFileDir.AutoSize = true;
-            this.cbDeleteOriginalFileDir.Enabled = false;
             this.cbDeleteOriginalFileDir.Location = new System.Drawing.Point(12, 107);
             this.cbDeleteOriginalFileDir.Name = "cbDeleteOriginalFileDir";
             this.cbDeleteOriginalFileDir.Size = new System.Drawing.Size(161, 17);
             this.cbDeleteOriginalFileDir.TabIndex = 7;
             this.cbDeleteOriginalFileDir.Text = "Delete original when finished";
             this.cbDeleteOriginalFileDir.UseVisualStyleBackColor = true;
-            this.cbDeleteOriginalFileDir.CheckedChanged += new System.EventHandler(this.cbDeleteOriginalFileDir_CheckedChanged);
+            this.cbDeleteOriginalFileDir.CheckStateChanged += new System.EventHandler(this.cbDeleteOriginalFileDir_CheckedChangedState);
             // 
             // cbShreadFileDir
             // 
@@ -128,7 +128,7 @@
             this.cbShreadFileDir.TabIndex = 8;
             this.cbShreadFileDir.Text = "Shread on deletion";
             this.cbShreadFileDir.UseVisualStyleBackColor = true;
-            this.cbShreadFileDir.CheckedChanged += new System.EventHandler(this.cbShreadFileDir_CheckedChanged);
+            this.cbShreadFileDir.CheckStateChanged += new System.EventHandler(this.cbShreadFileDir_CheckedChangedState);
             // 
             // btnEncrypt
             // 
@@ -160,11 +160,22 @@
             this.pbPasswordMatch.TabIndex = 11;
             this.pbPasswordMatch.TabStop = false;
             // 
+            // btnSelectDir
+            // 
+            this.btnSelectDir.Location = new System.Drawing.Point(244, 78);
+            this.btnSelectDir.Name = "btnSelectDir";
+            this.btnSelectDir.Size = new System.Drawing.Size(33, 23);
+            this.btnSelectDir.TabIndex = 12;
+            this.btnSelectDir.Text = "Dir";
+            this.btnSelectDir.UseVisualStyleBackColor = true;
+            this.btnSelectDir.Click += new System.EventHandler(this.btnSelectDir_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(320, 196);
+            this.Controls.Add(this.btnSelectDir);
             this.Controls.Add(this.pbPasswordMatch);
             this.Controls.Add(this.btnDecrypt);
             this.Controls.Add(this.btnEncrypt);
@@ -172,7 +183,7 @@
             this.Controls.Add(this.cbDeleteOriginalFileDir);
             this.Controls.Add(this.tbFileDirPath);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.btnSelectFileDir);
+            this.Controls.Add(this.btnSelectFile);
             this.Controls.Add(this.tbPassword2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbPassword1);
@@ -196,7 +207,7 @@
         private System.Windows.Forms.TextBox tbPassword1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbPassword2;
-        private System.Windows.Forms.Button btnSelectFileDir;
+        private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbFileDirPath;
         private System.Windows.Forms.CheckBox cbDeleteOriginalFileDir;
@@ -204,6 +215,7 @@
         private System.Windows.Forms.Button btnEncrypt;
         private System.Windows.Forms.Button btnDecrypt;
         private System.Windows.Forms.PictureBox pbPasswordMatch;
+        private System.Windows.Forms.Button btnSelectDir;
     }
 }
 
