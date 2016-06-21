@@ -18,15 +18,17 @@ namespace Encrypter
         }
 
         #region functions
-        private void checkPasswordMatch()
+        private bool CheckPasswordMatch()
         {
             if(tbPassword1.Text == tbPassword2.Text)
             {
                 pbPasswordMatch.Image = Properties.Resources.tick;
+                return true;
             }
             else
             {
                 pbPasswordMatch.Image = Properties.Resources.cross;
+                return false;
             }
         }
         #endregion
@@ -39,12 +41,12 @@ namespace Encrypter
 
         private void tbPassword1_KeyUp(object sender, KeyEventArgs e)
         {
-            checkPasswordMatch();
+            CheckPasswordMatch();
         }
 
         private void tbPassword2_KeyUp(object sender, KeyEventArgs e)
         {
-            checkPasswordMatch();
+            CheckPasswordMatch();
         }
 
         private void btnSelectFile_Click(object sender, EventArgs e)
@@ -85,12 +87,18 @@ namespace Encrypter
 
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
-
+            if (CheckPasswordMatch())
+            {
+                FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked);
+            }
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
-
+            if (CheckPasswordMatch())
+            {
+                FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked);
+            }
         }
         #endregion
     }
