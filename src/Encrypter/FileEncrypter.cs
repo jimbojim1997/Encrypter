@@ -57,7 +57,20 @@ namespace Encrypter
 
         public static void Decrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
         {
+            if (File.Exists(path))
+            {
+                if (new FileInfo(path).Extension == tempExtension)
+                {
+                    FileInfo file = new FileInfo(path);
+                    string directory = file.DirectoryName;
+                    string zipName = directory + @"\" + Path.GetFileNameWithoutExtension(path) + tempExtension;
 
+
+
+                    ExtractFromZip(zipName, directory);
+                    Delete(zipName);
+                }
+            }
         }
 
         private static void CreateZipFromFile(string path, string resultPath)
@@ -65,13 +78,13 @@ namespace Encrypter
             string fileName = new FileInfo(path).Name;
             using (ZipArchive zip = ZipFile.Open(resultPath, ZipArchiveMode.Create))
             {
-                zip.CreateEntryFromFile(path, fileName);
+                zip.CreateEntryFromFile(path, fileName, CompressionLevel.Optimal);
             }
         }
 
         private static void CreateZipFromDirectory(string path, string resultPath)
         {
-            ZipFile.CreateFromDirectory(path, resultPath);
+            ZipFile.CreateFromDirectory(path, resultPath, CompressionLevel.Optimal, true);
         }
 
         private static void ExtractFromZip(string path, string resultPath)
