@@ -14,7 +14,7 @@ namespace Encrypter
         private const string tempExtension = ".tmp";
         private const string encryptedExtension = ".enc";
 
-        public static void Encrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
+        public static EncrypterStatus Encrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
         {
             string directory;
             string zipName;
@@ -51,11 +51,13 @@ namespace Encrypter
             }
             else
             {
-                return;
+                return EncrypterStatus.doesNotExist;
             }
+
+            return EncrypterStatus.OK;
         }
 
-        public static void Decrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
+        public static EncrypterStatus Decrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
         {
             if (File.Exists(path))
             {
@@ -71,36 +73,88 @@ namespace Encrypter
                     Delete(zipName);
                 }
             }
+
+            return EncrypterStatus.OK;
         }
 
-        private static void CreateZipFromFile(string path, string resultPath)
+        private static bool CreateZipFromFile(string path, string resultPath)
         {
             string fileName = new FileInfo(path).Name;
-            using (ZipArchive zip = ZipFile.Open(resultPath, ZipArchiveMode.Create))
+            try
             {
-                zip.CreateEntryFromFile(path, fileName, CompressionLevel.Optimal);
+                using (ZipArchive zip = ZipFile.Open(resultPath, ZipArchiveMode.Create))
+                {
+                    zip.CreateEntryFromFile(path, fileName, CompressionLevel.Optimal);
+                }
             }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
-        private static void CreateZipFromDirectory(string path, string resultPath)
+        private static bool CreateZipFromDirectory(string path, string resultPath)
         {
-            ZipFile.CreateFromDirectory(path, resultPath, CompressionLevel.Optimal, true);
+            try
+            {
+                ZipFile.CreateFromDirectory(path, resultPath, CompressionLevel.Optimal, true);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
-        private static void ExtractFromZip(string path, string resultPath)
+        private static bool ExtractFromZip(string path, string resultPath)
         {
-            ZipFile.ExtractToDirectory(path, resultPath);
+            try
+            {
+                ZipFile.ExtractToDirectory(path, resultPath);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
-        private static void Delete(string path)
+        private static bool Delete(string path)
         {
             if (File.Exists(path))
             {
-                File.Delete(path);
-            }else if (Directory.Exists(path))
-            {
-                Directory.Delete(path);
+                try
+                {
+                    File.Delete(path);
+                }
+                catch
+                {
+                    return false;
+                }
+                return true;
             }
+            else if (Directory.Exists(path))
+            {
+                try
+                {
+                    Directory.Delete(path);
+                }
+                catch
+                {
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
+    }
+
+    enum EncrypterStatus
+    {
+        OK,
+        doesNotExist,
+        incorrectKey,
+        targetExists
     }
 }
