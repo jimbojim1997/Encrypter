@@ -55,7 +55,7 @@ namespace Encrypter
                 return EncrypterStatus.doesNotExist;
             }
 
-            EncrypterStatus encryptionResult = EncryptFile(zipName, resultingName, key);
+            EncrypterStatus encryptionResult = CryptFile(zipName, resultingName, key, EncrypterMode.Encrypt);
             Delete(zipName);
 
             if (deleteOnFinish)
@@ -76,7 +76,7 @@ namespace Encrypter
                     string directory = file.DirectoryName;
                     string zipName = directory + @"\" + Path.GetFileNameWithoutExtension(path) + tempExtension;
 
-                    EncrypterStatus decryptionResult = DecryptFile(path, zipName, key);
+                    EncrypterStatus decryptionResult = CryptFile(path, zipName, key, EncrypterMode.Decrypt);
                     ExtractFromZip(zipName, directory);
 
                     Delete(zipName);
@@ -99,7 +99,7 @@ namespace Encrypter
             }
         }
 
-        private static EncrypterStatus EncryptFile(string path, string resultPath, string key)
+        private static EncrypterStatus CryptFile(string path, string resultPath, string key, EncrypterMode mode)
         {
             if(!File.Exists(path))
             {
@@ -121,7 +121,15 @@ namespace Encrypter
                 aes.IV = md5;
                 aes.Key = sha256;
 
-                ICryptoTransform crypto = aes.CreateEncryptor();
+                ICryptoTransform crypto;
+                if(mode == EncrypterMode.Encrypt)
+                {
+                     crypto = aes.CreateEncryptor();
+                }
+                else
+                {
+                    crypto = aes.CreateDecryptor();
+                }
 
                 using (FileStream fsIn = new FileStream(path, FileMode.Open))
                 using (FileStream fsOut = new FileStream(resultPath, FileMode.Create))
@@ -138,49 +146,6 @@ namespace Encrypter
             catch (InvalidDataException)
             {
                 return EncrypterStatus.incorrectKey;
-            }
-            catch
-            {
-                return EncrypterStatus.unable;
-            }
-            return EncrypterStatus.OK;
-        }
-
-        private static EncrypterStatus DecryptFile(string path, string resultPath, string key)
-        {
-            if (!File.Exists(path))
-            {
-                return EncrypterStatus.doesNotExist;
-            }
-
-            if (File.Exists(resultPath))
-            {
-                return EncrypterStatus.targetExists;
-            }
-
-            try
-            {
-                byte[] keyByteArray = Encoding.ASCII.GetBytes(key);
-                byte[] md5 = MD5.Create().ComputeHash(keyByteArray);
-                byte[] sha256 = SHA256.Create().ComputeHash(keyByteArray);
-
-                Aes aes = AesCryptoServiceProvider.Create();
-                aes.IV = md5;
-                aes.Key = sha256;
-
-                ICryptoTransform crypto = aes.CreateDecryptor();
-
-                using (FileStream fsIn = new FileStream(path, FileMode.Open))
-                using (FileStream fsOut = new FileStream(resultPath, FileMode.Create))
-                using (CryptoStream cryptoStream = new CryptoStream(fsOut, crypto, CryptoStreamMode.Write))
-                {
-                    fsOut.SetLength(fsIn.Length);
-
-                    byte[] data = new byte[fsIn.Length];
-                    fsIn.Read(data, 0, data.Length);
-
-                    cryptoStream.Write(data, 0, data.Length);
-                }
             }
             catch
             {
@@ -260,5 +225,11 @@ namespace Encrypter
         incorrectKey,
         targetExists,
         unable
+    }
+
+    enum EncrypterMode
+    {
+        Encrypt,
+        Decrypt
     }
 }
