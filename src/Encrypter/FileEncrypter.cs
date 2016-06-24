@@ -234,31 +234,22 @@ namespace Encrypter
 
         private static bool Delete(string path)
         {
-            if (File.Exists(path))
+            try
             {
-                try
+                if (File.Exists(path))
                 {
                     File.Delete(path);
                 }
-                catch
+                else if (Directory.Exists(path))
                 {
-                    return false;
+                    Directory.Delete(path, true);
                 }
-                return true;
             }
-            else if (Directory.Exists(path))
+            catch
             {
-                try
-                {
-                    Directory.Delete(path);
-                }
-                catch
-                {
-                    return false;
-                }
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
     }
 
