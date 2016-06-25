@@ -31,6 +31,11 @@ namespace Encrypter
                 return false;
             }
         }
+
+        private void EncrypterProgressChange(int percent)
+        {
+            Console.WriteLine(percent);
+        }
         #endregion
 
         #region events
@@ -89,7 +94,7 @@ namespace Encrypter
         {
             if (CheckPasswordMatch())
             {
-                FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked);
+                FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
             }
         }
 
@@ -97,7 +102,7 @@ namespace Encrypter
         {
             if (CheckPasswordMatch())
             {
-                FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked);
+                FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
             }
         }
         #endregion

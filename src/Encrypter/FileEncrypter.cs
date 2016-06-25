@@ -14,7 +14,7 @@ namespace Encrypter
         private const string tempExtension = ".tmp";
         private const string encryptedExtension = ".enc";
 
-        public static EncrypterStatus Encrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
+        public static EncrypterStatus Encrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false, EncryptProgressDelegate onProgressChange = null)
         {
             string directory;
             string zipName;
@@ -55,7 +55,7 @@ namespace Encrypter
                 return EncrypterStatus.doesNotExist;
             }
 
-            EncrypterStatus encryptionResult = CryptFile(zipName, resultingName, key, EncrypterMode.Encrypt);
+            EncrypterStatus encryptionResult = CryptFile(zipName, resultingName, key, EncrypterMode.Encrypt, onProgressChange);
             Delete(zipName);
 
             if (deleteOnFinish)
@@ -66,7 +66,7 @@ namespace Encrypter
             return encryptionResult;
         }
 
-        public static EncrypterStatus Decrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false)
+        public static EncrypterStatus Decrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false, EncryptProgressDelegate onProgressChange = null)
         {
             if (File.Exists(path))
             {
@@ -76,7 +76,7 @@ namespace Encrypter
                     string directory = file.DirectoryName;
                     string zipName = directory + @"\" + Path.GetFileNameWithoutExtension(path) + tempExtension;
 
-                    EncrypterStatus decryptionResult = CryptFile(path, zipName, key, EncrypterMode.Decrypt);
+                    EncrypterStatus decryptionResult = CryptFile(path, zipName, key, EncrypterMode.Decrypt, onProgressChange);
                     ExtractFromZip(zipName, directory);
 
                     Delete(zipName);
@@ -99,7 +99,7 @@ namespace Encrypter
             }
         }
 
-        private static EncrypterStatus CryptFile(string path, string resultPath, string key, EncrypterMode mode)
+        private static EncrypterStatus CryptFile(string path, string resultPath, string key, EncrypterMode mode, EncryptProgressDelegate onProgressChange = null)
         {
             if(!File.Exists(path))
             {
@@ -135,12 +135,24 @@ namespace Encrypter
                 using (FileStream fsOut = new FileStream(resultPath, FileMode.Create))
                 using (CryptoStream cryptoStream = new CryptoStream(fsOut, crypto, CryptoStreamMode.Write))
                 {
-                    fsOut.SetLength(fsIn.Length);
+                    long fileLength = fsIn.Length;
+                    long percentMod = (long)Math.Floor((double)(fileLength / 100));
 
-                    byte[] data = new byte[fsIn.Length];
-                    fsIn.Read(data, 0, data.Length);
+                    fsOut.SetLength(fileLength);
 
-                    cryptoStream.Write(data, 0, data.Length);
+
+                    while(fsIn.Position < fileLength)
+                    {
+                        fsOut.WriteByte((byte) fsIn.ReadByte()); //ReadByte returns an int
+
+                        if (!Delegate.Equals(onProgressChange, null))
+                        {
+                            if (fsIn.Position % percentMod == 0)
+                            {
+                                onProgressChange((int)Math.Round((double)(fsIn.Position / percentMod)));
+                            }
+                        }
+                    }
                 }
             }
             catch (InvalidDataException)
@@ -232,4 +244,6 @@ namespace Encrypter
         Encrypt,
         Decrypt
     }
+
+    delegate void EncryptProgressDelegate(int progressPercent);
 }
