@@ -30,7 +30,7 @@
         {
             this.lblPassword1 = new System.Windows.Forms.Label();
             this.tbPassword1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblPassword2 = new System.Windows.Forms.Label();
             this.tbPassword2 = new System.Windows.Forms.TextBox();
             this.btnSelectFile = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -41,6 +41,8 @@
             this.btnDecrypt = new System.Windows.Forms.Button();
             this.pbPasswordMatch = new System.Windows.Forms.PictureBox();
             this.btnSelectDir = new System.Windows.Forms.Button();
+            this.pbProgress = new System.Windows.Forms.ProgressBar();
+            this.lblProgressState = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbPasswordMatch)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,14 +64,14 @@
             this.tbPassword1.TabIndex = 1;
             this.tbPassword1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tbPassword1_KeyUp);
             // 
-            // label1
+            // lblPassword2
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 39);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(87, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Check Password";
+            this.lblPassword2.AutoSize = true;
+            this.lblPassword2.Location = new System.Drawing.Point(12, 39);
+            this.lblPassword2.Name = "lblPassword2";
+            this.lblPassword2.Size = new System.Drawing.Size(87, 13);
+            this.lblPassword2.TabIndex = 2;
+            this.lblPassword2.Text = "Check Password";
             // 
             // tbPassword2
             // 
@@ -170,11 +172,31 @@
             this.btnSelectDir.UseVisualStyleBackColor = true;
             this.btnSelectDir.Click += new System.EventHandler(this.btnSelectDir_Click);
             // 
+            // pbProgress
+            // 
+            this.pbProgress.Location = new System.Drawing.Point(12, 190);
+            this.pbProgress.Name = "pbProgress";
+            this.pbProgress.Size = new System.Drawing.Size(168, 23);
+            this.pbProgress.Step = 1;
+            this.pbProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbProgress.TabIndex = 13;
+            // 
+            // lblProgressState
+            // 
+            this.lblProgressState.AutoSize = true;
+            this.lblProgressState.Location = new System.Drawing.Point(186, 196);
+            this.lblProgressState.Name = "lblProgressState";
+            this.lblProgressState.Size = new System.Drawing.Size(61, 13);
+            this.lblProgressState.TabIndex = 14;
+            this.lblProgressState.Text = "Not Started";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(320, 196);
+            this.ClientSize = new System.Drawing.Size(320, 223);
+            this.Controls.Add(this.lblProgressState);
+            this.Controls.Add(this.pbProgress);
             this.Controls.Add(this.btnSelectDir);
             this.Controls.Add(this.pbPasswordMatch);
             this.Controls.Add(this.btnDecrypt);
@@ -185,13 +207,13 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnSelectFile);
             this.Controls.Add(this.tbPassword2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblPassword2);
             this.Controls.Add(this.tbPassword1);
             this.Controls.Add(this.lblPassword1);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(336, 234);
+            this.MaximumSize = new System.Drawing.Size(336, 262);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(336, 234);
+            this.MinimumSize = new System.Drawing.Size(336, 262);
             this.Name = "Main";
             this.Text = "Encrypter";
             this.Load += new System.EventHandler(this.Main_Load);
@@ -205,7 +227,7 @@
 
         private System.Windows.Forms.Label lblPassword1;
         private System.Windows.Forms.TextBox tbPassword1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblPassword2;
         private System.Windows.Forms.TextBox tbPassword2;
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.Label label2;
@@ -216,6 +238,8 @@
         private System.Windows.Forms.Button btnDecrypt;
         private System.Windows.Forms.PictureBox pbPasswordMatch;
         private System.Windows.Forms.Button btnSelectDir;
+        private System.Windows.Forms.ProgressBar pbProgress;
+        private System.Windows.Forms.Label lblProgressState;
     }
 }
 

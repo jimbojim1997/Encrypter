@@ -32,9 +32,32 @@ namespace Encrypter
             }
         }
 
-        private void EncrypterProgressChange(int percent)
+        private void EncrypterProgressChange(int percent, EncrypterProgressState progressState)
         {
-            Console.WriteLine(percent);
+            pbProgress.Value = percent;
+
+            switch (progressState)
+            {
+                case EncrypterProgressState.compressing:
+                    lblProgressState.Text = "Copressing files...";
+                    break;
+                case EncrypterProgressState.extracting:
+                    lblProgressState.Text = "Extracting files...";
+                    break;
+                case EncrypterProgressState.encrypting:
+                    lblProgressState.Text = "Encrypting files...";
+                    break;
+                case EncrypterProgressState.decrypting:
+                    lblProgressState.Text = "Decrypting files...";
+                    break;
+                case EncrypterProgressState.cleanup:
+                    lblProgressState.Text = "Cleaning up files...";
+                    break;
+                default:
+                    lblProgressState.Text = "";
+                    break;
+            }
+            lblProgressState.Refresh();
         }
         #endregion
 
@@ -95,6 +118,8 @@ namespace Encrypter
             if (CheckPasswordMatch())
             {
                 FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
+                pbProgress.Value = 0;
+                lblProgressState.Text = "";
             }
         }
 
@@ -103,6 +128,8 @@ namespace Encrypter
             if (CheckPasswordMatch())
             {
                 FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
+                pbProgress.Value = 0;
+                lblProgressState.Text = "";
             }
         }
         #endregion

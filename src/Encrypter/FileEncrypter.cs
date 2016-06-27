@@ -16,6 +16,11 @@ namespace Encrypter
 
         public static EncrypterStatus Encrypt(string path, string key, bool deleteOnFinish = false, bool shreadOnFinish = false, EncryptProgressDelegate onProgressChange = null)
         {
+            if(onProgressChange != null)
+            {
+                onProgressChange(0, EncrypterProgressState.compressing);
+            }
+
             string directory;
             string zipName;
             string resultingName;
@@ -32,7 +37,10 @@ namespace Encrypter
                     Delete(zipName);
                 }
 
-                CreateZipFromFile(path, zipName);
+                if(CreateZipFromFile(path, zipName) == false)
+                {
+                    return EncrypterStatus.unable;
+                }
 
             }else if (Directory.Exists(path))
             {
@@ -56,6 +64,18 @@ namespace Encrypter
             }
 
             EncrypterStatus encryptionResult = CryptFile(zipName, resultingName, key, EncrypterMode.Encrypt, onProgressChange);
+
+            if(encryptionResult != EncrypterStatus.OK)
+            {
+                Delete(zipName);
+                return encryptionResult;
+            }
+
+            if (onProgressChange != null)
+            {
+                onProgressChange(0, EncrypterProgressState.cleanup);
+            }
+
             Delete(zipName);
 
             if (deleteOnFinish)
@@ -77,7 +97,27 @@ namespace Encrypter
                     string zipName = directory + @"\" + Path.GetFileNameWithoutExtension(path) + tempExtension;
 
                     EncrypterStatus decryptionResult = CryptFile(path, zipName, key, EncrypterMode.Decrypt, onProgressChange);
-                    ExtractFromZip(zipName, directory);
+
+                    if(decryptionResult != EncrypterStatus.OK)
+                    {
+                        Delete(zipName);
+                        return decryptionResult;
+                    }
+
+                    if (onProgressChange != null)
+                    {
+                        onProgressChange(0, EncrypterProgressState.extracting);
+                    }
+
+                    if(ExtractFromZip(zipName, directory) == false)
+                    {
+                        return EncrypterStatus.unable;
+                    }
+
+                    if (onProgressChange != null)
+                    {
+                        onProgressChange(0, EncrypterProgressState.cleanup);
+                    }
 
                     Delete(zipName);
 
@@ -113,6 +153,8 @@ namespace Encrypter
 
             try
             {
+                EncrypterProgressState progressState;
+
                 byte[] keyByteArray = Encoding.ASCII.GetBytes(key);
                 byte[] md5 = MD5.Create().ComputeHash(keyByteArray);
                 byte[] sha256 = SHA256.Create().ComputeHash(keyByteArray);
@@ -124,11 +166,13 @@ namespace Encrypter
                 ICryptoTransform crypto;
                 if(mode == EncrypterMode.Encrypt)
                 {
-                     crypto = aes.CreateEncryptor();
+                    crypto = aes.CreateEncryptor();
+                    progressState = EncrypterProgressState.encrypting;
                 }
                 else
                 {
                     crypto = aes.CreateDecryptor();
+                    progressState = EncrypterProgressState.decrypting;
                 }
 
                 using (FileStream fsIn = new FileStream(path, FileMode.Open))
@@ -143,13 +187,13 @@ namespace Encrypter
 
                     while(fsIn.Position < fileLength)
                     {
-                        fsOut.WriteByte((byte) fsIn.ReadByte()); //ReadByte returns an int
+                        cryptoStream.WriteByte((byte) fsIn.ReadByte()); //ReadByte returns an int
 
                         if (!Delegate.Equals(onProgressChange, null))
                         {
                             if (fsIn.Position % percentMod == 0)
                             {
-                                onProgressChange((int)Math.Round((double)(fsIn.Position / percentMod)));
+                                onProgressChange((int)Math.Round((double)(fsIn.Position / percentMod)), progressState);
                             }
                         }
                     }
@@ -245,5 +289,14 @@ namespace Encrypter
         Decrypt
     }
 
-    delegate void EncryptProgressDelegate(int progressPercent);
+    enum EncrypterProgressState
+    {
+        compressing,
+        extracting,
+        encrypting,
+        decrypting,
+        cleanup
+    }
+
+    delegate void EncryptProgressDelegate(int percent, EncrypterProgressState progressState);
 }
