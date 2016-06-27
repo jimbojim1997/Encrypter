@@ -39,7 +39,7 @@ namespace Encrypter
             switch (progressState)
             {
                 case EncrypterProgressState.compressing:
-                    lblProgressState.Text = "Copressing files...";
+                    lblProgressState.Text = "Compressing files...";
                     break;
                 case EncrypterProgressState.extracting:
                     lblProgressState.Text = "Extracting files...";
@@ -58,6 +58,27 @@ namespace Encrypter
                     break;
             }
             lblProgressState.Refresh();
+        }
+
+        private void ShowErrorMessage(EncrypterStatus status)
+        {
+            switch (status)
+            {
+                case EncrypterStatus.unable:
+                    MessageBox.Show("Unable to complete action.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EncrypterStatus.doesNotExist:
+                    MessageBox.Show("The file you are trying to encrypt/decrypt doesn't exist. Aborting.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EncrypterStatus.targetExists:
+                    MessageBox.Show("The target destination already exists. Aborting.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                case EncrypterStatus.incorrectKey:
+                    MessageBox.Show("Incorrect password. Aborting.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                default:
+                    break;
+            }
         }
         #endregion
 
@@ -117,7 +138,7 @@ namespace Encrypter
         {
             if (CheckPasswordMatch())
             {
-                FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
+                ShowErrorMessage(FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange));
                 pbProgress.Value = 0;
                 lblProgressState.Text = "";
             }
@@ -127,7 +148,7 @@ namespace Encrypter
         {
             if (CheckPasswordMatch())
             {
-                FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange);
+                ShowErrorMessage(FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange));
                 pbProgress.Value = 0;
                 lblProgressState.Text = "";
             }

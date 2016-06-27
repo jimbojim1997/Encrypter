@@ -199,7 +199,7 @@ namespace Encrypter
                     }
                 }
             }
-            catch (InvalidDataException)
+            catch (CryptographicException)
             {
                 return EncrypterStatus.incorrectKey;
             }
