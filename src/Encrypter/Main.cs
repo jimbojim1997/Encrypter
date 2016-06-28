@@ -140,7 +140,7 @@ namespace Encrypter
             {
                 ShowErrorMessage(FileEncrypter.Encrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange));
                 pbProgress.Value = 0;
-                lblProgressState.Text = "";
+                lblProgressState.Text = "Done";
             }
         }
 
@@ -150,7 +150,7 @@ namespace Encrypter
             {
                 ShowErrorMessage(FileEncrypter.Decrypt(tbFileDirPath.Text, tbPassword1.Text, cbDeleteOriginalFileDir.Checked, cbShreadFileDir.Checked, EncrypterProgressChange));
                 pbProgress.Value = 0;
-                lblProgressState.Text = "";
+                lblProgressState.Text = "Done";
             }
         }
         #endregion
